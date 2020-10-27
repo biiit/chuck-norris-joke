@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Random Chuck Norris Joke</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/4.1.0/system.min.js"
+    integrity="sha256-i+j3ZmMaI9nPuzasKbNrT3evNnUewPBf5p9UEJdr2zA=" crossorigin="anonymous"></script>
+  <script>
+    const fetchRandomJoke = function(callback) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', 'https://api.icndb.com/jokes/random', true);
+      xhr.responseType = 'json';
+      xhr.onload = function() {
+        const status = xhr.status;
+        if (status === 200) {
+          callback(null, xhr.response);
+        } else {
+          callback(status, xhr.response);
+        }
+      };
+      xhr.send();
+    };
+
+    const updateUI = text => document.querySelectorAll('#joke')[0].innerHTML = text;
+
+    function printRandomJoke() {
+      fetchRandomJoke((err, data) => {
+        if (err !== null) {
+          console.warn('Something went wrong: ' + err);
+        } else {
+          document.querySelectorAll('#button')[0].style.visibility = 'visible';
+          updateUI(data.value.joke);
+        }
+      });
+    }
+  </script>
+  <style>
+    #joke {
+      padding: 20px;
+      font-size: 30px;
+      font-family: Arial;
+    }
+    #button {
+      margin-left: 20px;
+      visibility: hidden;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div>
+    <div id="joke"></div>
+    <button id="button" onClick="printRandomJoke()">Load new joke</button>
+  </div>
+
+  <script>
+    async function main() {
+      updateUI('loading ...');
+
+      // get latest sdk
+      const { ShellSdk, SHELL_EVENTS } = await System.import('https://unpkg.com/fsm-shell').then(m => m.default);
+
+      console.log('using ShellSdk version', ShellSdk.VERSION);
+
+      if (!ShellSdk.isInsideShell()) {
+        throw new Error('unable to reach shell eventAPI');
+      }
+
+      const shellSdk = ShellSdk.init(parent, '*');
+
+      // get context
+      shellSdk.emit(SHELL_EVENTS.Version1.REQUIRE_CONTEXT, { clientIdentifier: 'example-plugin' });
+      shellSdk.on(SHELL_EVENTS.Version1.REQUIRE_CONTEXT, event => {
+        const {
+          account,
+          accountId,
+          company,
+          companyId,
+          user,
+          userId,
+          selectedLocale
+        } = JSON.parse(event);
+        printRandomJoke();
+      });
+    }
+
+    main().catch(e => (console.error(e), printRandomJoke()));
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "chuck-norris-joke",
+  "provider": "Spare Time Ltd.",
+  "description": "Random Chuck Norris Joke",
+  "version": "1.0.0",
+  "icon": "https://lh3.googleusercontent.com/d-5oDLX8riIgG0QcLztM_1Pm3nbbJ8mabkIHLFT7ltAPclxwGjC3c4w1uq-wgsjhew",
+  "useShellSDK": true,
+  "dockerRegistry": "beatmeiersap",
+  "helmChartVersion": "1.0.0",
+  "parameters": [],
+  "outletPositions": []
+}
